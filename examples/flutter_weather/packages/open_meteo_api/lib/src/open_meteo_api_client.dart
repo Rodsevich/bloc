@@ -22,7 +22,7 @@ class WeatherNotFoundFailure implements Exception {}
 class OpenMeteoApiClient {
   /// {@macro open_meteo_api_client}
   OpenMeteoApiClient({http.Client? httpClient})
-      : _httpClient = httpClient ?? http.Client();
+    : _httpClient = httpClient ?? http.Client();
 
   static const _baseUrlWeather = 'api.open-meteo.com';
   static const _baseUrlGeocoding = 'geocoding-api.open-meteo.com';
@@ -80,5 +80,10 @@ class OpenMeteoApiClient {
     final weatherJson = bodyJson['current_weather'] as Map<String, dynamic>;
 
     return Weather.fromJson(weatherJson);
+  }
+
+  /// Closes the underlying http client.
+  void close() {
+    _httpClient.close();
   }
 }

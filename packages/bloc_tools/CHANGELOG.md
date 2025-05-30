@@ -1,3 +1,64 @@
+# 0.1.0-dev.13
+
+- fix: various bug fixes for Windows
+- deps: bump `pkg:bloc_lint` to `^0.2.0-dev.4`
+
+# 0.1.0-dev.12
+
+- deps: bump `pkg:bloc_lint` to `^0.2.0-dev.3`
+
+# 0.1.0-dev.11
+
+- deps: bump `pkg:bloc_lint` to `^0.2.0-dev.2`
+
+# 0.1.0-dev.10
+
+- fix: language server diagnostic uri resolution on windows
+- deps: bump `pkg:bloc_lint` to `^0.2.0-dev.1`
+
+# 0.1.0-dev.9
+
+- feat: add `bloc lint` command
+
+  ```sh
+  $ bloc lint --help
+  Lint Dart source code.
+
+  Usage: bloc lint [arguments]
+  -h, --help    Print this usage information.
+
+  Run "bloc help" to see global options.
+  ```
+
+# 0.1.0-dev.8
+
+- feat: add `bloc new <template>` command
+
+  ```sh
+  $ bloc new --help
+  Generate new bloc components.
+
+  Usage: bloc new <subcommand> [arguments]
+  -h, --help    Print this usage information.
+
+  Available subcommands:
+    bloc             Generate a new Bloc in Dart. Built for the bloc state management library.
+    cubit            Generate a new Cubit in Dart. Built for the bloc state management library.
+    hydrated_bloc    Generate a new HydratedBloc in Dart. Built for the bloc state management library.
+    hydrated_cubit   Generate a new HydratedCubit in Dart. Built for the bloc state management library.
+    replay_bloc      Generate a new ReplayBloc in Dart. Built for the bloc state management library.
+    replay_cubit     Generate a new ReplayCubit in Dart. Built for the bloc state management library.
+
+  Run "bloc help" to see global options.
+  ```
+
+- chore: bump minimum Dart SDK version to 3.7.0
+
+# 0.1.0-dev.7
+
+- fix: version constant
+- chore(deps): upgrade to `pub_updater ^0.5.0`
+
 # 0.1.0-dev.6
 
 - chore: add screenshot to `pubspec.yaml`

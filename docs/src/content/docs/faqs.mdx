@@ -23,8 +23,8 @@ import BlocExternalForEachSnippet from '~/components/faqs/BlocExternalForEachSni
 
 ## State Not Updating
 
-❔ **Question**: I'm emitting a state in my bloc but the UI is not updating. What
-am I doing wrong?
+❔ **Question**: I'm emitting a state in my bloc but the UI is not updating.
+What am I doing wrong?
 
 💡 **Answer**: If you're using Equatable make sure to pass all properties to the
 props getter.
@@ -53,10 +53,12 @@ bloc.
 <StateNotUpdatingBad3Snippet />
 
 :::caution
+
 `Equatable` properties should always be copied rather than modified. If an
 `Equatable` class contains a `List` or `Map` as properties, be sure to use
-`List.from` or `Map.from` respectively to ensure that equality is evaluated
-based on the values of the properties rather than the reference.
+`List.of` or `Map.of` respectively to ensure that equality is evaluated based on
+the values of the properties rather than the reference.
+
 :::
 
 ## When to use Equatable
@@ -170,8 +172,8 @@ provided so you must ensure `BlocProvider.of()` is called within a child
 
 ❔ **Question**: How should I structure my project?
 
-💡 **Answer**: While there is really no right/wrong answer to this question, some
-recommended references are
+💡 **Answer**: While there is really no right/wrong answer to this question,
+some recommended references are
 
 - [I/O Photobooth](https://github.com/flutter/photobooth)
 - [I/O Pinball](https://github.com/flutter/pinball)

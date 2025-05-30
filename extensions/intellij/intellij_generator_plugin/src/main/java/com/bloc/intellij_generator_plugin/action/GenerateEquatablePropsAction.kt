@@ -1,6 +1,7 @@
 package com.bloc.intellij_generator_plugin.action
 
 import com.intellij.lang.ASTNode
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -13,13 +14,14 @@ import com.intellij.psi.util.PsiUtilBase
 
 
 class GenerateEquatablePropsAction : AnAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
     private var propsNullable = false
 
     override fun update(event: AnActionEvent) {
         super.update(event)
-        val action = event.presentation;
-        val editor = event.getRequiredData(CommonDataKeys.EDITOR)
+        val action = event.presentation
+        val editor = event.dataContext.getData(CommonDataKeys.EDITOR) ?: return
         val project = event.project ?: return
         val currentFile = PsiUtilBase.getPsiFileInEditor(editor, project)
         action.isEnabledAndVisible = currentFile?.name?.endsWith(".dart") == true
@@ -27,7 +29,7 @@ class GenerateEquatablePropsAction : AnAction() {
 
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.project ?: return
-        val editor = event.getRequiredData(CommonDataKeys.EDITOR)
+        val editor = event.dataContext.getData(CommonDataKeys.EDITOR) ?: return
 
         val currentFile = PsiUtilBase.getPsiFileInEditor(editor, project) ?: return
         val currentOffset = editor.caretModel.currentCaret.offset

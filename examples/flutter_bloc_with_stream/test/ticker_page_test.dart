@@ -8,7 +8,7 @@ import 'package:flutter_bloc_with_stream/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockTickerBloc extends MockBloc<TickerEvent, TickerState>
+class _MockTickerBloc extends MockBloc<TickerEvent, TickerState>
     implements TickerBloc {}
 
 extension on WidgetTester {
@@ -25,12 +25,12 @@ void main() {
   late TickerBloc tickerBloc;
 
   setUp(() {
-    tickerBloc = MockTickerBloc();
+    tickerBloc = _MockTickerBloc();
   });
 
   tearDown(() => reset(tickerBloc));
 
-  group('TickerPage', () {
+  group(TickerPage, () {
     testWidgets('renders initial state', (tester) async {
       when(() => tickerBloc.state).thenReturn(TickerInitial());
       await tester.pumpTickerPage(tickerBloc);
@@ -46,8 +46,7 @@ void main() {
       expect(find.text('Tick #$tickCount'), findsOneWidget);
     });
 
-    testWidgets(
-        'adds ticker started '
+    testWidgets('adds ticker started '
         'when start ticker floating action button is pressed', (tester) async {
       when(() => tickerBloc.state).thenReturn(TickerInitial());
       await tester.pumpTickerPage(tickerBloc);
@@ -56,8 +55,7 @@ void main() {
       verify(() => tickerBloc.add(TickerStarted())).called(1);
     });
 
-    testWidgets(
-        'tick count periodically increments '
+    testWidgets('tick count periodically increments '
         'every 1 second', (tester) async {
       whenListen(
         tickerBloc,

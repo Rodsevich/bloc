@@ -5,7 +5,7 @@ import 'package:weather_repository/weather_repository.dart';
 
 class WeatherRepository {
   WeatherRepository({OpenMeteoApiClient? weatherApiClient})
-      : _weatherApiClient = weatherApiClient ?? OpenMeteoApiClient();
+    : _weatherApiClient = weatherApiClient ?? OpenMeteoApiClient();
 
   final OpenMeteoApiClient _weatherApiClient;
 
@@ -21,6 +21,8 @@ class WeatherRepository {
       condition: weather.weatherCode.toInt().toCondition,
     );
   }
+
+  void dispose() => _weatherApiClient.close();
 }
 
 extension on int {

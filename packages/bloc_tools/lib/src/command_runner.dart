@@ -1,9 +1,10 @@
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
+import 'package:bloc_lint/bloc_lint.dart';
+import 'package:bloc_tools/src/commands/commands.dart';
+import 'package:bloc_tools/src/lsp/language_server.dart';
 import 'package:bloc_tools/src/version.dart';
-import 'package:io/ansi.dart';
-import 'package:io/io.dart';
-import 'package:mason/mason.dart' show Logger;
+import 'package:mason/mason.dart' show ExitCode, Logger, lightCyan, lightYellow;
 import 'package:pub_updater/pub_updater.dart';
 
 /// The package name.
@@ -14,15 +15,24 @@ const packageName = 'bloc_tools';
 /// {@endtemplate}
 class BlocToolsCommandRunner extends CommandRunner<int> {
   /// {@macro bloc_tools_command_runner}
-  BlocToolsCommandRunner({Logger? logger, PubUpdater? pubUpdater})
-      : _logger = logger ?? Logger(),
-        _pubUpdater = pubUpdater ?? PubUpdater(),
-        super('bloc', 'Command Line Tools for the Bloc Library.') {
+  BlocToolsCommandRunner({
+    Logger? logger,
+    PubUpdater? pubUpdater,
+    Linter linter = const Linter(),
+    LanguageServer Function()? languageServerBuilder,
+  }) : _logger = logger ?? Logger(),
+       _pubUpdater = pubUpdater ?? PubUpdater(),
+       super('bloc', 'Command Line Tools for the Bloc Library.') {
     argParser.addFlag(
       'version',
       negatable: false,
       help: 'Print the current version.',
     );
+    addCommand(
+      LanguageServerCommand(languageServerBuilder: languageServerBuilder),
+    );
+    addCommand(NewCommand(logger: _logger));
+    addCommand(LintCommand(linter: linter, logger: _logger));
   }
 
   final Logger _logger;
@@ -58,6 +68,8 @@ class BlocToolsCommandRunner extends CommandRunner<int> {
     } else {
       exitCode = await super.runCommand(topLevelResults);
     }
+    // Avoid disrupting stdout when running the language server.
+    if (topLevelResults.command?.name == 'language-server') return exitCode;
     await _checkForUpdates();
     return exitCode;
   }
@@ -69,30 +81,21 @@ class BlocToolsCommandRunner extends CommandRunner<int> {
       if (!isUpToDate) {
         _logger
           ..info('')
-          ..info(
-            '''
+          ..info('''
 +------------------------------------------------------------------------------------+
 |                                                                                    |
 |                    ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(packageVersion)} \u2192 ${lightCyan.wrap(latestVersion)}                     |
 |  ${lightYellow.wrap('Changelog:')} ${lightCyan.wrap('https://github.com/felangel/bloc/releases/tag/$packageName-v$latestVersion')}  |
 |                                                                                    |
 +------------------------------------------------------------------------------------+
-''',
-          );
-        final response = _logger.prompt('Would you like to update? (y/n) ');
-        if (response.isYes()) {
+''');
+        final confirm = _logger.confirm('Would you like to update?');
+        if (confirm) {
           final progress = _logger.progress('Updating to $latestVersion');
           await _pubUpdater.update(packageName: packageName);
           progress.complete('Updated to $latestVersion');
         }
       }
     } catch (_) {}
-  }
-}
-
-extension on String {
-  bool isYes() {
-    final normalized = toLowerCase().trim();
-    return normalized == 'y' || normalized == 'yes';
   }
 }

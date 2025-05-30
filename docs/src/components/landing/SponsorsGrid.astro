@@ -7,17 +7,19 @@ export type Props = {
 import { Image } from 'astro:assets';
 import { LinkCard } from '@astrojs/starlight/components';
 
-import miquido from '~/assets/sponsors/miquido.png';
-import monterail from '~/assets/sponsors/monterail.png';
-import netguru from '~/assets/sponsors/netguru.png';
-import parabeac from '~/assets/sponsors/parabeac.png';
+import shorebirdLight from '~/assets/sponsors/shorebird-light.png';
+import shorebirdDark from '~/assets/sponsors/shorebird-dark.png';
 import stream from '~/assets/sponsors/stream.png';
-import porada from '~/assets/sponsors/porada.png';
+import rettel from '~/assets/sponsors/rettel.png';
 
 const { sponsoredBy = 'Sponsored with 💖 by', becomeASponsor = 'Become a Sponsor' } = Astro.props;
 
+interface DynamicImageMetadata {
+	light: ImageMetadata;
+	dark: ImageMetadata;
+}
 interface Sponsor {
-	img: ImageMetadata;
+	img: DynamicImageMetadata | ImageMetadata;
 	href: string;
 	alt: string;
 	invert: boolean;
@@ -25,10 +27,13 @@ interface Sponsor {
 
 const sponsors: Sponsor[] = [
 	{
-		alt: 'Monterail Logo',
-		img: monterail,
-		href: 'https://www.monterail.com/services/flutter-development/?utm_source=bloc&utm_medium=logo&utm_campaign=flutter',
-		invert: true,
+		alt: 'Shorebird Logo',
+		img: {
+			light: shorebirdLight,
+			dark: shorebirdDark,
+		},
+		href: 'https://shorebird.dev',
+		invert: false,
 	},
 	{
 		alt: 'Stream Logo',
@@ -37,30 +42,18 @@ const sponsors: Sponsor[] = [
 		invert: true,
 	},
 	{
-		alt: 'Miquido Logo',
-		img: miquido,
-		href: 'https://www.miquido.com/flutter-development-company/?utm_source=github&utm_medium=sponsorship&utm_campaign=bloc-silver-tier&utm_term=flutter-development-company&utm_content=miquido-logo',
+		alt: 'Rettel Logo',
+		img: rettel,
+		href: 'https://rettelgame.com',
 		invert: true,
-	},
-	{
-		alt: 'Parabeac Logo',
-		img: parabeac,
-		href: 'https://bit.ly/parabeac_flutterbloc',
-		invert: false,
-	},
-	{
-		alt: 'Netguru Logo',
-		img: netguru,
-		href: 'https://www.netguru.com/services/flutter-app-development?utm_campaign=%5BS%5D%5BMob%5D%20Flutter&utm_source=github&utm_medium=sponsorship&utm_term=bloclibrary',
-		invert: true,
-	},
-	{
-		alt: 'Porada Logo',
-		img: porada,
-		href: 'https://www.porada.app/',
-		invert: false,
 	},
 ];
+
+function isDynamicImage(
+	value: DynamicImageMetadata | ImageMetadata
+): value is DynamicImageMetadata {
+	return value.hasOwnProperty('light') && value.hasOwnProperty('dark');
+}
 ---
 
 <style>
@@ -76,20 +69,41 @@ const sponsors: Sponsor[] = [
 	<p class="text-xl font-semibold">{sponsoredBy}</p>
 </div>
 <div class="flex w-full justify-center items-center not-content">
-	<div class="grid grid-cols-2 gap-1 sm:grid-cols-3 md:grid-cols-6">
+	<div class="grid grid-cols-1 sm:gap-4 sm:grid-cols-3">
 		{
 			sponsors.map((sponsor) => {
 				return (
 					<div class="flex flex-row justify-center items-center">
-						<a href={sponsor.href} aria-label={sponsor.alt} target="_blank" rel="noreferrer">
-							<Image
-								class={sponsor.invert ? 'invert-logo' : 'logo'}
-								src={sponsor.img}
-								width={300}
-								style="width:150px;height:auto"
-								alt={sponsor.alt}
-								loading="eager"
-							/>
+						<a href={sponsor.href} aria-label={sponsor.alt}>
+							{isDynamicImage(sponsor.img) ? (
+								<>
+									<Image
+										class={`${sponsor.invert ? 'invert-logo' : 'logo'} dark:sl-hidden`}
+										src={sponsor.img.light}
+										width={300}
+										style="width:150px;height:auto"
+										alt={sponsor.alt}
+										loading="eager"
+									/>
+									<Image
+										class={`${sponsor.invert ? 'invert-logo' : 'logo'} light:sl-hidden`}
+										src={sponsor.img.dark}
+										width={300}
+										style="width:150px;height:auto"
+										alt={sponsor.alt}
+										loading="eager"
+									/>
+								</>
+							) : (
+								<Image
+									class={sponsor.invert ? 'invert-logo' : 'logo'}
+									src={sponsor.img}
+									width={300}
+									style="width:150px;height:auto"
+									alt={sponsor.alt}
+									loading="eager"
+								/>
+							)}
 						</a>
 					</div>
 				);
